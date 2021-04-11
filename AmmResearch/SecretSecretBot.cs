@@ -105,10 +105,10 @@ namespace AmmResearch
             double sscrtShare = (double)sscrtBalance / totalBalance;
             if (totalBalance > 5000000)
             {
-                if (sscrtShare < 0.66)
+                if (sscrtShare < 0.7)
                 {
                     Console.WriteLine("Converting scrt to sscrt");
-                    double scrtToConvert = totalBalance * 0.75 - (double)sscrtBalance;
+                    double scrtToConvert = totalBalance * 0.8 - (double)sscrtBalance;
                     secretcli.ConvertScrtToSscrt(new BigInteger(scrtToConvert));
                     isBalanceFresh = false;
                     while (true)
@@ -120,13 +120,12 @@ namespace AmmResearch
                         Thread.Sleep(TimeSpan.FromMilliseconds(400));
                         Console.Write("+");
                     }
-
                 }
                 if (nativeBalance < 5000000)
                 {
                     Console.WriteLine("Converting sscrt to scrt");
-                    double sscrtToConvert = totalBalance * 0.25 - (double)nativeBalance;
-                    secretcli.ConvertSscrtToScrt(new BigInteger(14000000));
+                    double sscrtToConvert = totalBalance * 0.2 - (double)nativeBalance;
+                    secretcli.ConvertSscrtToScrt(new BigInteger(sscrtToConvert));
                     isBalanceFresh = false;
                     while (true)
                     {

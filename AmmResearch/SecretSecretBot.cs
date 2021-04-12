@@ -1,8 +1,6 @@
 ﻿using AmmResearch.Models;
 using System;
-using System.Collections.Generic;
 using System.Numerics;
-using System.Text;
 using System.Threading;
 
 namespace AmmResearch
@@ -98,6 +96,20 @@ namespace AmmResearch
                     Console.WriteLine("+");
                 }
             }
+            else
+            {
+                secretcli.SwapNativeToSnip(amount, amount);
+                isBalanceFresh = false;
+                while (true)
+                {
+                    if (isBalanceFresh)
+                    {
+                        break;
+                    }
+                    Thread.Sleep(TimeSpan.FromMilliseconds(400));
+                    Console.WriteLine("+");
+                }
+            }
         }
         public void FuelUpWithScrt()
         {
@@ -157,7 +169,7 @@ namespace AmmResearch
                 {
                     FuelUpWithScrt();
                     decimal scrtLpBalance = (decimal)secretcli.QueryBalance(sscrtScrtPairAddress);
-                    Console.WriteLine($"lp scrt balance = {scrtLpBalance / 1000000:0.00}");
+                    Console.WriteLine($"lp scrt balance = {scrtLpBalance / 1000000:0.00} {DateTime.Now.ToString("HH:mm:ss")}");
                     if (scrtLpBalance == lastScrtLpBalance)
                     {
                         Thread.Sleep(3000);
@@ -191,8 +203,29 @@ namespace AmmResearch
                     }
                     else
                     {
-                        Console.WriteLine("It's profitable to put scrt in the pool, but this option is not implemented yet");
-                        Console.WriteLine("Arbitrage opportunity will not be caught");
+                        decimal expectedReturn = sscrtLpBalance - avg;
+                        decimal leftover = avg * (1 - feeCoeff) * 0.5M;
+                        BigInteger amountPut = new BigInteger(expectedReturn - leftover);
+
+                        if (amountPut <= 0)
+                        {
+                            Console.WriteLine("There is no arbitrage opportunity");
+                            lastScrtLpBalance = scrtLpBalance;
+                        }
+                        else
+                        {
+                            Console.WriteLine($"Should put {amountPut / 1000000}.{amountPut % 1000000:000000} sscrt");
+                            if (nativeBalance > 5000000)
+                            {
+                                ApeIn(false, BigInteger.Min(amountPut, nativeBalance - 2000000));
+                            }
+                            else
+                            {
+                                Console.WriteLine($"Insufficient funds. We have {nativeBalance} uscrt");
+                            }
+                        }
+
+
                         lastScrtLpBalance = scrtLpBalance;
                         // too much sscrt in the pool, we wanna add scrt
                         //decimal expectedReturn = sscrtLpBalance - avg;

@@ -67,7 +67,7 @@ namespace AmmResearch
             string args = $"tx compute execute {token.Address} \"" +
                 $"{{\\\"send\\\": {{\\\"recipient\\\": \\\"{pair.Address}\\\"," +
                 $"\\\"amount\\\": \\\"{input}\\\",\\\"msg\\\": \\\"{base64msg}\\\"}}}}\" " +
-                $"--from ban --gas 360000 --gas-prices 0.25uscrt -y";
+                $"--from ban --gas 360000 --gas-prices 0.26uscrt -y";
             Console.WriteLine(ExecuteCmd(args));
         }
         public void SwapSnipToNative(Token token, Pair pair, BigInteger input, BigInteger minOutput)
@@ -78,17 +78,17 @@ namespace AmmResearch
             string args = $"tx compute execute {token.Address} \"" +
                 $"{{\\\"send\\\": {{\\\"recipient\\\": \\\"{pair.Address}\\\"," +
                 $"\\\"amount\\\": \\\"{input}\\\",\\\"msg\\\": \\\"{base64msg}\\\"}}}}\" " +
-                $"--from ban --gas 260000 --gas-prices 0.25uscrt -y";
+                $"--from ban --gas 260000 --gas-prices 0.26uscrt -y";
             Console.WriteLine(ExecuteCmd(args));
         }
         public void SwapNativeToSnip(BigInteger input, BigInteger minOutput)
         {
             string contractAddr = "secret1rf4uqg4d2elmvp535ayhxwnrpdykmxan0nrwtg";
-            string msg = $"{{\"swap\":{{\"offer_asset\":{{\"info\":{{\"native_token\":{{\"denom\":\"uscrt\"}}}}," +
-                $"\"amount\":\"{input}\"}},\"expected_return\":\"{minOutput}\"}}}}";
-            var plainBytes = System.Text.Encoding.UTF8.GetBytes(msg);
-            string base64msg = Convert.ToBase64String(plainBytes);
-            string args = $""; // TODO
+            string msg = $"{{\\\"swap\\\":{{\\\"offer_asset\\\":{{\\\"info\\\":{{\\\"native_token\\\":{{\\\"denom\\\":\\\"uscrt\\\"}}}}," +
+                $"\\\"amount\\\":\\\"{input}\\\"}},\\\"expected_return\\\":\\\"{minOutput}\\\"}}}}";
+
+            string args = $"tx compute execute {contractAddr} {msg}  --from {Address} --gas 256127 --gas-prices 0.25uscrt --amount {input}uscrt -y";
+            Console.WriteLine(ExecuteCmd(args));
         }
     }
 }
